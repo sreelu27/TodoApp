@@ -1,6 +1,7 @@
 package com.sree.todo.controller;
 
 import com.sree.todo.dto.TodoDto;
+import com.sree.todo.entity.Todo;
 import com.sree.todo.service.TodoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,15 @@ public class TodoController {
         todoService.deleteTodo(id);
         return ResponseEntity.ok("Todo is deleted");
     }
-
+    @PatchMapping("{id}/completed")
+    public ResponseEntity<TodoDto> completeTodo(@PathVariable("id") Long id){
+        TodoDto todoDto = todoService.completeTodo(id);
+        return ResponseEntity.ok(todoDto);
+    }
+    @PatchMapping("{id}/incomplete")
+    public ResponseEntity<TodoDto> incompleteTodo(@PathVariable("id") Long id){
+        TodoDto todoDto = todoService.incompleteTodo(id);
+        return ResponseEntity.ok(todoDto);
+    }
 
 }
