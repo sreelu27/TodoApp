@@ -2,6 +2,7 @@ package com.sree.todo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -15,13 +16,30 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SpringSecurityConfig {
 
-    //basic authentication to pass username & password in header of the request
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
+        /*
+      basic authentication to pass username & password in header of the request
         httpSecurity.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
                         authorize.anyRequest().authenticated()).httpBasic(Customizer.withDefaults());
+        return httpSecurity.build();
+        */
+
+        httpSecurity.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests((authorize) -> {
+                    authorize.requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("ADMIN","USER");
+                    authorize.requestMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("ADMIN","USER");
+                    //to allow it to public access
+                    //authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll();
+                    authorize.anyRequest().authenticated();
+                }
+                ).httpBasic(Customizer.withDefaults());
+
         return httpSecurity.build();
     }
 
