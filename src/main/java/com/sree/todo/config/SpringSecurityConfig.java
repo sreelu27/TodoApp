@@ -1,8 +1,11 @@
 package com.sree.todo.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -15,7 +18,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SpringSecurityConfig {
+
+    private UserDetailsService userDetailsService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -53,9 +59,15 @@ public class SpringSecurityConfig {
                 ).httpBasic(Customizer.withDefaults());
         return httpSecurity.build();
     }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+
 
     //create multiple users in memory authentication
-    @Bean
+    /* @Bean
     public UserDetailsService userDetailsService(){
         UserDetails user1= User.builder()
                 .username("priya")
@@ -71,6 +83,8 @@ public class SpringSecurityConfig {
 
         return  new InMemoryUserDetailsManager(user1, admin);
     }
+
+     */
 
     //This method uses Bcrypt algorithm to hash the password
     @Bean
